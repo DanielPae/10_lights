@@ -23,32 +23,45 @@ color calculate_ambient(color alight, double *areflect ) {
   a.red = alight.red * areflect[RED];
   a.blue = alight.blue * areflect[BLUE];
   a.green = alight.green * areflect[GREEN];
+  //printf("%d %d %d\n", a.red, a.blue, a.green);
   return a;
 }
 
 color calculate_diffuse(double light[2][3], double *dreflect, double *normal ) {
   color d;
+  normalize(normal);
   double dot = dot_product(light[LOCATION], normal);
-  d.red = light[COLOR][RED] * dreflect[RED] * dot;
-  d.red = light[COLOR][BLUE] * dreflect[BLUE] * dot;
-  d.red = light[COLOR][GREEN] * dreflect[GREEN] * dot;
+  d.red = (int)(light[COLOR][RED] * dreflect[RED] * dot);
+  d.blue = (int)(light[COLOR][BLUE] * dreflect[BLUE] * dot);
+  d.green = (int)(light[COLOR][GREEN] * dreflect[GREEN] * dot);
+  //printf("%d %d %d\n", d.red, d.blue, d.green);
   return d;
 }
 
 color calculate_specular(double light[2][3], double *sreflect, double *view, double *normal ) {
   color s;
+  normalize(normal);
+  normalize(light[LOCATION]);
+  normalize(view);
   double dotnl = dot_product(light[LOCATION], normal);
-  normal[0] *= 2 * dotnl;
-  normal[1] *= 2 * dotnl;
-  normal[2] *= 2 * dotnl;
-  normal[0] -= light[LOCATION][0];
-  normal[1] -= light[LOCATION][1];
-  normal[2] -= light[LOCATION][2];
+  normal[0] = normal[0] * dotnl;
+  normal[1] = normal[1] * dotnl;
+  normal[2] = normal[2] * dotnl;
+  printf("1 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
+  normal[0] = normal[0] * 2;
+  normal[1] = normal[1] * 2;
+  normal[2] = normal[2] * 2;
+  printf("2 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
+  normal[0] = normal[0] - light[LOCATION][0];
+  normal[1] = normal[1] - light[LOCATION][1];
+  normal[2] = normal[2] - light[LOCATION][2];
+  printf("3 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
   double dotnv = dot_product(view, normal);
-  s.red = sreflect[RED] * dotnv;
-  s.blue = sreflect[BLUE] * dotnv;
-  s.green = sreflect[GREEN] * dotnv;
-  printf("%lf %lf %lf\n", s.red, s.blue, s.green);
+  s.red = (int)(light[COLOR][RED] * sreflect[RED] * dotnv);
+  s.blue = (int)(light[COLOR][BLUE] * sreflect[BLUE] * dotnv);
+  s.green = (int)(light[COLOR][GREEN] * sreflect[GREEN] * dotnv);
+  printf("4 : %lf %lf\n", dotnl, dotnv);
+  printf("%d %d %d\n\n", s.red, s.blue, s.green);
   return s;
 }
 
