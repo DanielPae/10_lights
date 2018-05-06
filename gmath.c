@@ -24,6 +24,7 @@ color calculate_ambient(color alight, double *areflect ) {
   a.blue = alight.blue * areflect[BLUE];
   a.green = alight.green * areflect[GREEN];
   //printf("%d %d %d\n", a.red, a.blue, a.green);
+  limit_color(&a);
   return a;
 }
 
@@ -35,6 +36,7 @@ color calculate_diffuse(double light[2][3], double *dreflect, double *normal ) {
   d.blue = (int)(light[COLOR][BLUE] * dreflect[BLUE] * dot);
   d.green = (int)(light[COLOR][GREEN] * dreflect[GREEN] * dot);
   //printf("%d %d %d\n", d.red, d.blue, d.green);
+  limit_color(&d);
   return d;
 }
 
@@ -47,21 +49,22 @@ color calculate_specular(double light[2][3], double *sreflect, double *view, dou
   normal[0] = normal[0] * dotnl;
   normal[1] = normal[1] * dotnl;
   normal[2] = normal[2] * dotnl;
-  printf("1 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
+  //printf("1 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
   normal[0] = normal[0] * 2;
   normal[1] = normal[1] * 2;
   normal[2] = normal[2] * 2;
-  printf("2 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
+  //printf("2 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
   normal[0] = normal[0] - light[LOCATION][0];
   normal[1] = normal[1] - light[LOCATION][1];
   normal[2] = normal[2] - light[LOCATION][2];
-  printf("3 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
+  //printf("3 : %lf %lf %lf\n", normal[0], normal[1], normal[2]);
   double dotnv = dot_product(view, normal);
   s.red = (int)(light[COLOR][RED] * sreflect[RED] * dotnv);
   s.blue = (int)(light[COLOR][BLUE] * sreflect[BLUE] * dotnv);
   s.green = (int)(light[COLOR][GREEN] * sreflect[GREEN] * dotnv);
-  printf("4 : %lf %lf\n", dotnl, dotnv);
-  printf("%d %d %d\n\n", s.red, s.blue, s.green);
+  //printf("4 : %lf %lf\n", dotnl, dotnv);
+  limit_color(&s);
+  //printf("%d %d %d\n\n", s.red, s.blue, s.green);
   return s;
 }
 
@@ -71,6 +74,9 @@ void limit_color( color * c ) {
   if(c->red > 255) c->red = 255;
   if(c->blue > 255) c->blue = 255;
   if(c->green > 255) c->green = 255;
+  if(c->red < 0) c->red = 0;
+  if(c->blue < 0) c->blue = 0;
+  if(c->green < 0) c->green = 0;
 }
 
 //vector functions
